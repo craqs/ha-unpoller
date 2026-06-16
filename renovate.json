@@ -1,0 +1,32 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "timezone": "Europe/Warsaw",
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore(deps):",
+  "semanticCommits": "enabled",
+  "minimumReleaseAge": "7 days",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Keep the add-on `version` in config.yaml in lockstep with unpoller, so Home Assistant surfaces the update (same depName as the Dockerfile FROM → one PR).",
+      "fileMatch": ["^unpoller/config\\.yaml$"],
+      "matchStrings": ["version:\\s*\"(?<currentValue>[0-9]+\\.[0-9]+\\.[0-9]+)\""],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/unpoller/unpoller",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Bump the Home Assistant base images in build.yaml.",
+      "fileMatch": ["^unpoller/build\\.yaml$"],
+      "matchStrings": ["ghcr\\.io/home-assistant/[a-z0-9]+-base:(?<currentValue>[0-9.]+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/home-assistant/aarch64-base"
+    }
+  ]
+}

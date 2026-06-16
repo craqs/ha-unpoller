@@ -1,0 +1,8 @@
+# Per-arch base images injected as BUILD_FROM by home-assistant/builder.
+# Base-image tags are bumped by Renovate (customManager in ../renovate.json).
+build_from:
+  aarch64: ghcr.io/home-assistant/aarch64-base:3.22
+labels:
+  org.opencontainers.image.title: UniFi Poller (unpoller)
+  org.opencontainers.image.source: https://github.com/craqs/ha-unpoller
+  org.opencontainers.image.licenses: MIT

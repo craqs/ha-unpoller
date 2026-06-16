@@ -1,0 +1,43 @@
+# Home Assistant add-on: UniFi Poller (unpoller)
+#
+# Exports UniFi controller metrics (devices, per-port link speed, clients, PoE,
+# throughput) in Prometheus format on :9130. It polls the local UniFi controller
+# over the LAN; a Prometheus server scrapes :9130.
+#
+# `version` is kept equal to the bundled unpoller version and bumped in lockstep
+# with the upstream image pin by Renovate (see ../renovate.json).
+# HA only offers an "update" when this changes, so tying it to unpoller surfaces
+# every bump as an add-on update.
+name: UniFi Poller (unpoller)
+version: "3.3.0"
+slug: unpoller
+description: UniFi controller metrics (per-port link speed, device/PoE/throughput) for Prometheus
+url: https://github.com/craqs/ha-unpoller
+image: ghcr.io/craqs/ha-unpoller-{arch}
+arch:
+  - aarch64
+# unpoller only makes an outbound HTTPS call to the controller and serves HTTP on
+# :9130, published on the host via the ports map below. It needs NO host PID and
+# NO host network, so — unlike the node-exporter add-on — Protection mode can stay
+# ON. Do not enable host_pid/host_network here.
+init: false
+startup: services
+apparmor: false
+webui: "http://[HOST]:[PORT:9130]/metrics"
+ports:
+  9130/tcp: 9130
+ports_description:
+  9130/tcp: Prometheus metrics endpoint (/metrics)
+options:
+  controller_url: "https://192.168.1.1"
+  unifi_user: ""
+  unifi_pass: ""
+  verify_ssl: false
+schema:
+  controller_url: url
+  unifi_user: str
+  # Required (no `?`): a read-only, local UniFi account. There is NO default —
+  # the password is supplied here by the operator and lives only on this
+  # appliance. run.sh refuses to start if it is empty.
+  unifi_pass: password
+  verify_ssl: bool
